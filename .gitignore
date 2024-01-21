@@ -1,0 +1,4 @@
+# Project exclude paths
+/.gradle/
+/consoleApp/build/
+/scanner/build/
