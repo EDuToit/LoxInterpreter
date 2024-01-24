@@ -1,3 +1,5 @@
+import grammar.*
+
 class Scanner(private val source: String) {
     private val keyWords = hashMapOf(
         "and"    to    TokenType.AND,

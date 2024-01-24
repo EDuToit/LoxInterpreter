@@ -1,8 +1,10 @@
+package grammar
+
 class Token(
     val type: TokenType,
-    private val lexeme: String,
-    val literal: Any?,
-    line: Int
+    val lexeme: String,
+    val literal: Any? = null,
+    val line: Int? = null
 ) {
     override fun toString(): String {
         return "$type $lexeme ${literal?.toString() ?: ""}"

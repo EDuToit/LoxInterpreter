@@ -1,4 +1,5 @@
-import TokenType.*
+import grammar.TokenType.*
+
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
