@@ -1,5 +1,8 @@
 import com.github.ajalt.mordant.rendering.TextColors.*
 import com.github.ajalt.mordant.terminal.Terminal
+import grammar.Token
+import grammar.TokenType
+import grammar.representation.BracketPrinter
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -9,7 +12,6 @@ private val terminal = Terminal()
 val hadError = ArrayList<Lox.ContextualError>()
 
 class Lox {
-
     fun main(args: Array<String>) {
         if (args.size > 1) {
             return terminal.println("""
@@ -47,17 +49,25 @@ class Lox {
     }
 
     private fun runFile(s: String) {
-        val fileBytes = File(s).readBytes();
+        val fileBytes = File(s).readBytes()
         run(String(fileBytes, Charset.defaultCharset()))
     }
 
     private fun run(block: String) {
-        val scanner = Scanner(block);
-        scanner.scanTokens().forEach {
+        val scanner = Scanner(block)
+        val tokens = scanner.scanTokens()
+        tokens.forEach {
             terminal.println(
                 green(it.toString())
             )
         }
+        val parser = Parser(tokens)
+        val expression = parser.parse()
+
+        if (hadError.isNotEmpty()) {
+            return
+        }
+        println(expression?.let { BracketPrinter().print(it) } ?: "Parsing error")
     }
 
     companion object {
@@ -69,6 +79,23 @@ class Lox {
                 message = newError,
                 stderr = true
             )
+        }
+        fun error(token: Token, message: String) {
+            if (token.type === TokenType.EOF) {
+                val newError = ContextualError(token.line ?: 0, " at end", message)
+                hadError.add(newError)
+                terminal.danger(
+                    message = newError,
+                    stderr = true
+                )
+            } else {
+                val newError = ContextualError(token.line ?: 0 , " at '${token.lexeme}'", message)
+                hadError.add(newError)
+                terminal.danger(
+                    message = newError,
+                    stderr = true
+                )
+            }
         }
     }
 
